@@ -1,0 +1,25 @@
+{
+  "name": "pi-orb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Two Pi tools for the native Orb voice and question API.",
+  "keywords": ["pi-package"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dantetekanem/pi-orb.git"
+  },
+  "homepage": "https://github.com/dantetekanem/pi-orb#readme",
+  "bugs": {
+    "url": "https://github.com/dantetekanem/pi-orb/issues"
+  },
+  "license": "MIT",
+  "files": ["src", "prompt", "README.md", "CHANGELOG.md", "LICENSE"],
+  "pi": { "extensions": ["./src/index.ts"] },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "scripts": { "test": "node --test test/client.test.mjs test/herdr.test.mjs test/tools.test.mjs" },
+  "engines": { "node": ">=22" }
+}
