@@ -1,6 +1,6 @@
 export type OrbReply = { status: number; body: Record<string, string> };
 
-export async function post(path: '/speak' | '/ask', payload: object, timeoutMs: number,
+export async function post(path: '/speak' | '/ask' | '/voice-session', payload: object, timeoutMs: number,
                            signal?: AbortSignal, send: typeof fetch = fetch): Promise<OrbReply> {
   signal?.throwIfAborted();
   const body = JSON.stringify(payload), size = Buffer.byteLength(body);
@@ -14,15 +14,18 @@ export async function post(path: '/speak' | '/ask', payload: object, timeoutMs: 
       method: 'POST', redirect: 'error', signal: combined, body,
       headers: { 'Content-Type': 'application/json', 'Content-Length': String(size) },
     });
+    combined.throwIfAborted();
     reader = response.body?.getReader();
     if (!reader) throw Error('Orb returned an empty response.');
     const chunks: Uint8Array[] = [];
+    const responseLimit = path === '/voice-session' ? 16384 : 8192;
     let bytes = 0;
     while (true) {
       const { value, done } = await reader.read();
+      combined.throwIfAborted();
       if (done) break;
       bytes += value.byteLength;
-      if (bytes > 8192) throw Error('Orb response exceeds 8192 bytes.');
+      if (bytes > responseLimit) throw Error(`Orb response exceeds ${responseLimit} bytes.`);
       chunks.push(value);
     }
     const result: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'));
@@ -31,6 +34,7 @@ export async function post(path: '/speak' | '/ask', payload: object, timeoutMs: 
   } finally {
     clearTimeout(timeout);
     controller.abort();
+    await reader?.cancel().catch(() => {});
     reader?.releaseLock();
   }
 }

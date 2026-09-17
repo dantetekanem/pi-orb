@@ -20,6 +20,6 @@
     "@earendil-works/pi-coding-agent": "*",
     "typebox": "*"
   },
-  "scripts": { "test": "node --test test/client.test.mjs test/herdr.test.mjs test/tools.test.mjs" },
+  "scripts": { "test": "node --test test/client.test.mjs test/herdr.test.mjs test/tools.test.mjs test/voice-session.test.mjs" },
   "engines": { "node": ">=22" }
 }
